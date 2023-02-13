@@ -3,7 +3,7 @@ package org.iesalandalus.programacion.alquilervehiculos.modelo.dominio;
 import java.util.Objects;
 
 public class Cliente {
-	private static String ER_NOMBRE = ("[A-Z][a-z]+");
+	private static String ER_NOMBRE = ("/^[A-Z][a-z]+((\s[A-Z][a-z]+)*)$/");
 	private static String ER_DNI = ("([0-9]){8}[A-Z]");
 	private static String ER_TELEFONO = ("([0-9]){9}");
 	private String nombre;
@@ -33,6 +33,7 @@ public class Cliente {
 		if (nombre == null) {
 			throw new NullPointerException("ERROR: El nombre no puede ser nulo.");
 		}
+
 		this.nombre = nombre;
 	}
 
@@ -44,10 +45,15 @@ public class Cliente {
 		if (dni == null) {
 			throw new NullPointerException("ERROR: El DNI no puede ser nulo.");
 		}
+		if (!dni.matches(ER_DNI)) { // Arreglar
+			throw new IllegalArgumentException("ERROR: El DNI no tiene un formato válido.");
+		}
+
 		this.dni = dni;
 	}
+
 	private boolean comprobarLetraDni() {
-		
+
 		return false;
 	}
 
@@ -58,9 +64,13 @@ public class Cliente {
 	public void setTelefono(String telefono) {
 		if (telefono == null) {
 			throw new NullPointerException("ERROR: El teléfono no puede ser nulo.");
-		} 
+		}
+		if (!telefono.matches(ER_TELEFONO)) {
+			throw new IllegalArgumentException("ERROR: El teléfono no tiene un formato válido.");
+		}
 		this.telefono = telefono;
 	}
+
 	public static Cliente getClienteConDni(String dni) {
 		return new Cliente("Bob Esponja", dni, "950112233");
 	}
@@ -87,6 +97,5 @@ public class Cliente {
 	public String toString() {
 		return String.format("%s - %s (%s)", nombre, dni, telefono);
 	}
-
 
 }
