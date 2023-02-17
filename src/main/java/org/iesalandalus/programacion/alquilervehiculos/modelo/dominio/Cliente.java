@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Cliente {
 	private static String ER_NOMBRE = ("/^[A-Z][a-z]+((\s[A-Z][a-z]+)*)$/");
-	private static String ER_DNI = ("([0-9]){8}[A-Z]");
+	private static String ER_DNI = ( "([0-9]{8})([A-Za-z])");
 	private static String ER_TELEFONO = ("([0-9]){9}");
 	private String nombre;
 	private String dni;
@@ -54,7 +54,7 @@ public class Cliente {
 
 	private boolean comprobarLetraDni() {
 
-		return false;
+		return false ;
 	}
 
 	public String getTelefono() {
