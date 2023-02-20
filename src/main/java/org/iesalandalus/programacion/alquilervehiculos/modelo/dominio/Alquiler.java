@@ -130,7 +130,8 @@ public class Alquiler {
 		String cadenaFrase = null;
 		if (this.fechaDevolucion == null) {
 
-			cadenaFrase = String.format("%s <---> %s, %s - %s (%d€)", cliente, turismo,
+			cadenaFrase = String.format(
+					"%s <---> %s, %s - %s (%d€)", cliente, turismo,
 					getFechaAlquiler().format(FORMATO_FECHA), "Aún no devuelto", getPrecio());
 
 		} else {
