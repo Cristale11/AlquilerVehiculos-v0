@@ -30,7 +30,7 @@ public enum Opcion {
 
 	public Opcion get(int ordinal) {
 		if (!esOrdinalValido(ordinal)) {
-			throw new IllegalArgumentException("ERROR: La opcion seleccionada no es válida.");
+			throw new IllegalArgumentException("La opcion no es validad.");
 		}
 		return Opcion.values()[ordinal];
 	}
