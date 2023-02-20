@@ -3,8 +3,8 @@ package org.iesalandalus.programacion.alquilervehiculos.modelo.dominio;
 import java.util.Objects;
 
 public class Cliente {
-	private static String ER_NOMBRE = ("/^[A-Z][a-z]+((\s[A-Z][a-z]+)*)$/");
-	private static String ER_DNI = ( "([0-9]{8})([A-Za-z])");
+	private static String ER_NOMBRE = ("[A-Z][a-zñ]*( [A-Z][a-zñ]*)*");
+	private static String ER_DNI = ("([0-9]{8})([A-Za-z])");
 	private static String ER_TELEFONO = ("([0-9]){9}");
 	private String nombre;
 	private String dni;
@@ -33,6 +33,9 @@ public class Cliente {
 		if (nombre == null) {
 			throw new NullPointerException("ERROR: El nombre no puede ser nulo.");
 		}
+		if (!nombre.matches(ER_NOMBRE)) {
+			throw new IllegalArgumentException("ERROR: El nombre no tiene un formato válido.");
+		}
 
 		this.nombre = nombre;
 	}
@@ -48,13 +51,22 @@ public class Cliente {
 		if (!dni.matches(ER_DNI)) { // Arreglar
 			throw new IllegalArgumentException("ERROR: El DNI no tiene un formato válido.");
 		}
+		if (!comprobarLetraDni(dni)) {
+			throw new IllegalArgumentException("ERROR: La letra del DNI no es correcta.");
+		}
 
 		this.dni = dni;
 	}
 
-	private boolean comprobarLetraDni() {
+	private boolean comprobarLetraDni(String dni) {
+		char[] letrasDni = { 'T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V',
+				'H', 'L', 'C', 'K', 'E' };
 
-		return false ;
+		int numeroDni = Integer.parseInt(dni.substring(0, 8));
+
+		int CalcularLetra = letrasDni[numeroDni % 23];
+
+		return dni.charAt(8) == CalcularLetra;
 	}
 
 	public String getTelefono() {

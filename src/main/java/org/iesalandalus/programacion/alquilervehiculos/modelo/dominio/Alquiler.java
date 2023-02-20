@@ -1,14 +1,15 @@
 package org.iesalandalus.programacion.alquilervehiculos.modelo.dominio;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import javax.naming.OperationNotSupportedException;
+
 public class Alquiler {
-	protected static DateTimeFormatter FORMATO_FECHA;
+	protected static DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private static int PRECIO_DIA = 20;
 	private LocalDate fechaAlquiler;
 	private LocalDate fechaDevolucion;
@@ -25,6 +26,10 @@ public class Alquiler {
 		if (alquiler == null) {
 			throw new NullPointerException("ERROR: No es posible copiar un alquiler nulo.");
 		}
+		cliente = new Cliente(alquiler.getCliente());
+		turismo = new Turismo(alquiler.getTurismo());
+		setFechaAlquiler(alquiler.getFechaAlquiler());
+		setFechaDevolucion(alquiler.getFechaDevolucion());
 	}
 
 	public LocalDate getFechaAlquiler() {
@@ -39,6 +44,7 @@ public class Alquiler {
 		if (fechaAlquiler.isAfter(hoy)) {
 			throw new IllegalArgumentException("ERROR: La fecha de alquiler no puede ser futura.");
 		}
+
 		this.fechaAlquiler = fechaAlquiler;
 	}
 
@@ -47,7 +53,15 @@ public class Alquiler {
 	}
 
 	private void setFechaDevolucion(LocalDate fechaDevolucion) {
-
+		if (fechaDevolucion == null) {
+			throw new NullPointerException("ERROR: La fecha de devolución no puede ser nula.");
+		}
+		if (fechaDevolucion.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException("ERROR: La fecha de devolución no puede ser futura.");
+		}
+		if (fechaDevolucion.isBefore(fechaAlquiler) || fechaDevolucion.isEqual(getFechaAlquiler())) {
+			throw new IllegalArgumentException("ERROR: La fecha de devolución debe ser posterior a la fecha de alquiler.");
+		}
 		this.fechaDevolucion = fechaDevolucion;
 	}
 
@@ -73,17 +87,24 @@ public class Alquiler {
 		this.turismo = turismo;
 	}
 
-	public void devolver(LocalDate fechaDevolucion) { // revisar
-
+	public void devolver(LocalDate fechaDevolucion) throws OperationNotSupportedException { // revisar
+		if (this.fechaDevolucion != null) {
+			throw new OperationNotSupportedException("ERROR: La devolución ya estaba registrada.");
+		}
+		setFechaDevolucion(fechaDevolucion);
 	}
 
 	public int getPrecio() {
-		/*
-		long numDias = ChronoUnit.DAYS.between(fechaAlquiler, fechaDevolucion);
-		double factorCilindrada = turismo.getCilindrada() / 10;
-		return (int) ((PRECIO_DIA + factorCilindrada) * numDias);
-		*/
-		return 0;
+		int precio = 0;
+		if (this.fechaDevolucion != null) {
+			int factorCilindrada = turismo.getCilindrada() / 10;
+			int calcularNumDias = (int) (ChronoUnit.DAYS.between(fechaAlquiler, fechaDevolucion));
+			precio = (PRECIO_DIA + factorCilindrada) * calcularNumDias;
+
+		} else {
+			precio = 0;
+		}
+		return precio;
 	}
 
 	@Override
@@ -106,10 +127,18 @@ public class Alquiler {
 
 	@Override
 	public String toString() {
-		return String.format("Alquiler [fechaAlquiler=%s, fechaDevolucion=%s, cliente=%s, turismo=%s]", fechaAlquiler,
-				fechaDevolucion, cliente, turismo);
+		String cadenaFrase = null;
+		if (this.fechaDevolucion == null) {
+
+			cadenaFrase = String.format("%s <---> %s, %s - %s (%d€)", cliente, turismo,
+					getFechaAlquiler().format(FORMATO_FECHA), "Aún no devuelto", getPrecio());
+
+		} else {
+			cadenaFrase = String.format("%s <---> %s, %s - %s (%d€)", cliente, turismo,
+					getFechaAlquiler().format(FORMATO_FECHA), getFechaDevolucion().format(FORMATO_FECHA), getPrecio());
+		}
+
+		return cadenaFrase;
 	}
-
-
 
 }
